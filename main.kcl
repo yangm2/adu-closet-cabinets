@@ -1,0 +1,352 @@
+// side-by-side open lower custom cabinets
+// features:
+// * fit within closet bay
+// * LHS
+//   * drawer for cutlery
+//   * shelf for microwave
+// * RHS
+//   * bay for mini-fridge
+// * butcher-block counter-top
+// * 1/2" partial face trim
+// * recessed for toe-kick
+
+// lang-ref: https://zoo.dev/docs/kcl
+const microwaveHeight = 12
+const microwaveWidth = 20.25
+const microwaveDepth = 16.5
+
+const refrigeratorHeight = 33
+const refrigeratorWidth = 19
+const refrigeratorDepth = 20.5
+
+const counterThickness = 2.5
+
+const outerPanelThickness = 0.75
+const innerPanelThickness = 0.5
+const faceTrimThickness = 0.5
+
+const trimHeight = 3.5
+const trimProfile = 2 * outerPanelThickness
+
+const lhsPanelDepth = 21
+const lhsPanelHeight = refrigeratorHeight + 2 + trimHeight + trimProfile
+
+const cabinetToeKickDepth = 4
+
+const topBraceDepth = 4
+const drawerHeight = 8
+
+const upperShelfHeight = microwaveHeight + 2
+const lowerShelfHeight = lhsPanelHeight - trimHeight - drawerHeight - upperShelfHeight
+
+const cabinetWidth = microwaveWidth + 2 * 2.5
+
+const refCabinetWidth = refrigeratorWidth + 2 * 2.5
+const refLowerShelfHeight = refrigeratorHeight + 2
+
+const lhsPanel = startSketchOn('YZ')
+  |> startProfileAt([0, 0], %)
+  |> angledLine([0, lhsPanelDepth], %, $rectangleSegmentA001)
+  |> angledLine([
+       segAng(rectangleSegmentA001) + 90,
+       lhsPanelHeight
+     ], %, $rectangleSegmentB001)
+  |> angledLine([
+       segAng(rectangleSegmentA001),
+       -segLen(rectangleSegmentA001)
+     ], %, $rectangleSegmentC001)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+  |> extrude(outerPanelThickness, %)
+const rhsPanel = startSketchOn(offsetPlane("YZ", cabinetWidth))
+  |> startProfileAt([cabinetToeKickDepth, 0], %)
+  |> angledLine([0, lhsPanelDepth - cabinetToeKickDepth], %, $rectangleSegmentA002)
+  |> angledLine([
+       segAng(rectangleSegmentA002) + 90,
+       lhsPanelHeight
+     ], %, $rectangleSegmentB002)
+  |> angledLine([
+       segAng(rectangleSegmentA002),
+       -segLen(rectangleSegmentA002)
+     ], %, $rectangleSegmentC002)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+  |> extrude(outerPanelThickness, %)
+const bottomPanel = startSketchOn(offsetPlane("XY", trimHeight - outerPanelThickness))
+  |> startProfileAt([
+       outerPanelThickness,
+       cabinetToeKickDepth
+     ], %)
+  |> angledLine([0, cabinetWidth - outerPanelThickness], %, $rectangleSegmentA003)
+  |> angledLine([
+       segAng(rectangleSegmentA003) + 90,
+       lhsPanelDepth - cabinetToeKickDepth - outerPanelThickness
+     ], %, $rectangleSegmentB003)
+  |> angledLine([
+       segAng(rectangleSegmentA003),
+       -segLen(rectangleSegmentA003)
+     ], %, $rectangleSegmentC003)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+  |> extrude(outerPanelThickness, %)
+const mwLowerShelf = startSketchOn(offsetPlane("XY", lowerShelfHeight + trimHeight))
+  |> startProfileAt([
+       outerPanelThickness,
+       cabinetToeKickDepth
+     ], %)
+  |> angledLine([0, cabinetWidth - outerPanelThickness], %, $rectangleSegmentA004)
+  |> angledLine([
+       segAng(rectangleSegmentA004) + 90,
+       lhsPanelDepth - cabinetToeKickDepth - outerPanelThickness
+     ], %, $rectangleSegmentB004)
+  |> angledLine([
+       segAng(rectangleSegmentA004),
+       -segLen(rectangleSegmentA004)
+     ], %, $rectangleSegmentC004)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+  |> extrude(innerPanelThickness, %)
+const mwUpperShelf = startSketchOn(offsetPlane("XY", upperShelfHeight + lowerShelfHeight + trimHeight + innerPanelThickness))
+  |> startProfileAt([
+       outerPanelThickness,
+       cabinetToeKickDepth
+     ], %)
+  |> angledLine([0, cabinetWidth - outerPanelThickness], %, $rectangleSegmentA005)
+  |> angledLine([
+       segAng(rectangleSegmentA005) + 90,
+       lhsPanelDepth - cabinetToeKickDepth - outerPanelThickness
+     ], %, $rectangleSegmentB005)
+  |> angledLine([
+       segAng(rectangleSegmentA005),
+       -segLen(rectangleSegmentA005)
+     ], %, $rectangleSegmentC005)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+  |> extrude(innerPanelThickness, %)
+const topFront = startSketchOn(offsetPlane("XY", lhsPanelHeight - outerPanelThickness))
+  |> startProfileAt([
+       outerPanelThickness,
+       cabinetToeKickDepth
+     ], %)
+  |> angledLine([0, cabinetWidth - outerPanelThickness], %, $rectangleSegmentA007)
+  |> angledLine([
+       segAng(rectangleSegmentA005) + 90,
+       topBraceDepth
+     ], %, $rectangleSegmentB007)
+  |> angledLine([
+       segAng(rectangleSegmentA007),
+       -segLen(rectangleSegmentA007)
+     ], %, $rectangleSegmentC007)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+  |> extrude(outerPanelThickness, %)
+const topBack = startSketchOn(offsetPlane("XY", lhsPanelHeight - outerPanelThickness))
+  |> startProfileAt([
+       outerPanelThickness,
+       lhsPanelDepth - topBraceDepth
+     ], %)
+  |> angledLine([0, cabinetWidth - outerPanelThickness], %, $rectangleSegmentA008)
+  |> angledLine([
+       segAng(rectangleSegmentA008) + 90,
+       topBraceDepth
+     ], %, $rectangleSegmentB008)
+  |> angledLine([
+       segAng(rectangleSegmentA008),
+       -segLen(rectangleSegmentA008)
+     ], %, $rectangleSegmentC008)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+  |> extrude(outerPanelThickness, %)
+const backPanel = startSketchOn(offsetPlane("XZ", 0 - lhsPanelDepth))
+  |> startProfileAt([
+       outerPanelThickness,
+       trimHeight - outerPanelThickness
+     ], %)
+  |> angledLine([0, cabinetWidth - outerPanelThickness], %, $rectangleSegmentA006)
+  |> angledLine([
+       segAng(rectangleSegmentA006) + 90,
+       lhsPanelHeight - trimHeight + outerPanelThickness
+     ], %, $rectangleSegmentB006)
+  |> angledLine([
+       segAng(rectangleSegmentA006),
+       -segLen(rectangleSegmentA006)
+     ], %, $rectangleSegmentC006)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+  |> extrude(outerPanelThickness, %)
+
+const counterTop = startSketchOn(offsetPlane("XY", lhsPanelHeight))
+  |> startProfileAt([-3.5, 0], %)
+  |> angledLine([0, 50 + 2 * 3.5], %, $rectangleSegmentA010)
+  |> angledLine([
+       segAng(rectangleSegmentA010) + 90,
+       lhsPanelDepth
+     ], %, $rectangleSegmentB010)
+  |> angledLine([
+       segAng(rectangleSegmentA010),
+       -segLen(rectangleSegmentA010)
+     ], %, $rectangleSegmentC010)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+  |> extrude(counterThickness, %)
+
+const upperFaceTrim = startSketchOn(offsetPlane("XZ", 0 - cabinetToeKickDepth))
+  |> startProfileAt([
+       outerPanelThickness,
+       lhsPanelHeight - trimProfile
+     ], %)
+  |> angledLine([0, cabinetWidth + refCabinetWidth], %, $rectangleSegmentA031)
+  |> angledLine([
+       segAng(rectangleSegmentA031) + 90,
+       trimProfile
+     ], %, $rectangleSegmentB031)
+  |> angledLine([
+       segAng(rectangleSegmentA031),
+       -segLen(rectangleSegmentA031)
+     ], %, $rectangleSegmentC031)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+  |> extrude(faceTrimThickness, %)
+
+const middleFaceTrim = startSketchOn(offsetPlane("XZ", 0 - cabinetToeKickDepth))
+  |> startProfileAt([cabinetWidth, trimHeight], %)
+  |> angledLine([0, trimProfile], %, $rectangleSegmentA032)
+  |> angledLine([
+       segAng(rectangleSegmentA032) + 90,
+       lhsPanelHeight - trimHeight - trimProfile
+     ], %, $rectangleSegmentB032)
+  |> angledLine([
+       segAng(rectangleSegmentA032),
+       -segLen(rectangleSegmentA032)
+     ], %, $rectangleSegmentC032)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+  |> extrude(faceTrimThickness, %)
+
+const toeFaceTrim = startSketchOn(offsetPlane("XZ", 0 - cabinetToeKickDepth))
+  |> startProfileAt([outerPanelThickness, 0], %)
+  |> angledLine([0, cabinetWidth + refCabinetWidth], %, $rectangleSegmentA033)
+  |> angledLine([
+       segAng(rectangleSegmentA033) + 90,
+       trimHeight
+     ], %, $rectangleSegmentB033)
+  |> angledLine([
+       segAng(rectangleSegmentA033),
+       -segLen(rectangleSegmentA033)
+     ], %, $rectangleSegmentC033)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+  |> extrude(faceTrimThickness, %)
+
+const refLhsPanel = startSketchOn(offsetPlane("YZ", cabinetWidth + outerPanelThickness))
+  |> startProfileAt([cabinetToeKickDepth, 0], %)
+  |> angledLine([0, lhsPanelDepth - cabinetToeKickDepth], %, $rectangleSegmentA021)
+  |> angledLine([
+       segAng(rectangleSegmentA021) + 90,
+       lhsPanelHeight
+     ], %, $rectangleSegmentB021)
+  |> angledLine([
+       segAng(rectangleSegmentA021),
+       -segLen(rectangleSegmentA021)
+     ], %, $rectangleSegmentC021)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+  |> extrude(outerPanelThickness, %)
+
+const refRhsRefPanel = startSketchOn(offsetPlane("YZ", cabinetWidth + outerPanelThickness + refCabinetWidth))
+  |> startProfileAt([0, 0], %)
+  |> angledLine([0, lhsPanelDepth], %, $rectangleSegmentA022)
+  |> angledLine([
+       segAng(rectangleSegmentA022) + 90,
+       lhsPanelHeight
+     ], %, $rectangleSegmentB022)
+  |> angledLine([
+       segAng(rectangleSegmentA022),
+       -segLen(rectangleSegmentA022)
+     ], %, $rectangleSegmentC022)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+  |> extrude(outerPanelThickness, %)
+
+const refbottomPanel = startSketchOn(offsetPlane("XY", trimHeight - outerPanelThickness))
+  |> startProfileAt([
+       2 * outerPanelThickness + cabinetWidth,
+       cabinetToeKickDepth
+     ], %)
+  |> angledLine([
+       0,
+       refCabinetWidth - outerPanelThickness
+     ], %, $rectangleSegmentA023)
+  |> angledLine([
+       segAng(rectangleSegmentA023) + 90,
+       lhsPanelDepth - cabinetToeKickDepth - outerPanelThickness
+     ], %, $rectangleSegmentB023)
+  |> angledLine([
+       segAng(rectangleSegmentA023),
+       -segLen(rectangleSegmentA023)
+     ], %, $rectangleSegmentC023)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+  |> extrude(outerPanelThickness, %)
+
+const reftopFront = startSketchOn(offsetPlane("XY", lhsPanelHeight - outerPanelThickness))
+  |> startProfileAt([
+       2 * outerPanelThickness + cabinetWidth,
+       cabinetToeKickDepth
+     ], %)
+  |> angledLine([
+       0,
+       refCabinetWidth - outerPanelThickness
+     ], %, $rectangleSegmentA024)
+  |> angledLine([
+       segAng(rectangleSegmentA024) + 90,
+       topBraceDepth
+     ], %, $rectangleSegmentB024)
+  |> angledLine([
+       segAng(rectangleSegmentA024),
+       -segLen(rectangleSegmentA024)
+     ], %, $rectangleSegmentC024)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+  |> extrude(outerPanelThickness, %)
+const reftopBack = startSketchOn(offsetPlane("XY", lhsPanelHeight - outerPanelThickness))
+  |> startProfileAt([
+       2 * outerPanelThickness + cabinetWidth,
+       lhsPanelDepth - topBraceDepth
+     ], %)
+  |> angledLine([
+       0,
+       refCabinetWidth - outerPanelThickness
+     ], %, $rectangleSegmentA025)
+  |> angledLine([
+       segAng(rectangleSegmentA025) + 90,
+       topBraceDepth
+     ], %, $rectangleSegmentB025)
+  |> angledLine([
+       segAng(rectangleSegmentA025),
+       -segLen(rectangleSegmentA025)
+     ], %, $rectangleSegmentC025)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+  |> extrude(outerPanelThickness, %)
+
+const refbackPanel = startSketchOn(offsetPlane("XZ", 0 - lhsPanelDepth))
+  |> startProfileAt([
+       2 * outerPanelThickness + cabinetWidth,
+       trimHeight - outerPanelThickness
+     ], %)
+  |> angledLine([
+       0,
+       refCabinetWidth - outerPanelThickness
+     ], %, $rectangleSegmentA026)
+  |> angledLine([
+       segAng(rectangleSegmentA026) + 90,
+       lhsPanelHeight - trimHeight + outerPanelThickness
+     ], %, $rectangleSegmentB026)
+  |> angledLine([
+       segAng(rectangleSegmentA026),
+       -segLen(rectangleSegmentA026)
+     ], %, $rectangleSegmentC026)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+  |> extrude(outerPanelThickness, %)
