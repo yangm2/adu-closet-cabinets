@@ -14,6 +14,10 @@
 // lang-ref: https://zoo.dev/docs/kcl
 
 
+/* *****************************
+     Constants & Assertions
+****************************** */
+
 // Rev-A-Shelf Double 30-Quart Pullout Under Cabinet Trash Can with Soft Open & Close Slide System, Metallic Silver, Maple Wood Bottom 4WCBM-2430DM-2
 // https://www.amazon.com/gp/product/B0019CPKRG/ref=sw_img_1?smid=A1DXN92KCKEQV4&psc=1
 trashDrawer = {
@@ -22,51 +26,79 @@ trashDrawer = {
   depth: 21.75
 }
 
-refrigerator = { height: 33, width: 19, depth: 20.5 , doorSwingClearance: 0.75}
+refrigerator = {
+  height: 33,
+  width: 19.5,
+  depth: 20.5,
+  doorSwingClearance: 0.75
+}
 
 counter = { thickness: 1 }
-
-outerPanel = { thickness: 0.75 }
-innerPanel = { thickness: 0.5 }
-
-trim = {
-  height: 2.5,
-  // toekick height
-  profile: 2 * outerPanel.thickness,
-  thickness: 0.5
+outerPanel = {
+  thickness: 23 / 32,
+  /* 0.75 */
+}
+innerPanel = {
+  thickness: 15 / 32,
+  /* 0.5 */
 }
 
 // FIXME: want >3"
-cabinetToeKick = { depth: 2.75 }
+cabinetToeKick = { depth: 2.5, height: 2.5 }
+
+trim = {
+  width: 2 * innerPanel.thickness,
+  thickness: 0.5
+}
 
 topBrace = {
   depth: 4,
   thickness: outerPanel.thickness
 }
-drawer = { height: 8 }
+drawer = { height: 6.25 }
 
 // FIXME: want top of counter to be 34-36"!!!
 // many of the cabinet dimensions are keyed off of this
 lhsPanel = {
   // measured from back wall to flush with closet face
   depth: 25.25,
-  height: refrigerator.height + 0.5 + trim.height + topBrace.thickness - refrigerator.doorSwingClearance,
-  // trim.profile
+  height: refrigerator.height + 0.5 + cabinetToeKick.height + trim.width - refrigerator.doorSwingClearance
 }
-counterTopHeight = lhsPanel.height + counter.thickness
-// assertLessThanOrEq(counterHeight, 36, "top of counter is TOO tall!")
+checkCounterTopHeight = lhsPanel.height + counter.thickness
+assertLessThanOrEq(checkCounterTopHeight, 38, "top of counter is TOO tall!")
 
+trashCabinet = {
+  innerWidth: trashDrawer.width + 2,
+  outerWidth: outerPanel.thickness + trashDrawer.width + 2 + innerPanel.thickness,
+}
 
-lowerShelfHeight = lhsPanel.height - trim.height - drawer.height
-assertGreaterThanOrEq(lowerShelfHeight, trashDrawer.height, "Lower shelf does not fit Trash Drawer")
-assertGreaterThanOrEq(lhsPanel.depth - cabinetToeKick.depth - outerPanel.thickness, trashDrawer.depth, "Cabinet depth does not fit Trash Drawer")
+lowerShelfInnerHeight = 20.25 - 1/8
+middleShelfHeight = cabinetToeKick.height + lowerShelfInnerHeight + 1/8
+upperShelfHeight = middleShelfHeight + drawer.height
 
-trashCabinet = { width: trashDrawer.width + 2 }
+checkTrashCabinetInnerDrawerHeight = lhsPanel.height - trim.width - cabinetToeKick.height - lowerShelfInnerHeight - ( 2 * drawer.height)
+
+checkTrashDrawerHeight = middleShelfHeight - innerPanel.thickness - cabinetToeKick.height
+assertGreaterThanOrEq(checkTrashDrawerHeight, trashDrawer.height, "Trash Drawer does not fit in HEIGHT")
+checkTrashDrawerWidth = trashCabinet.innerWidth
+assertGreaterThanOrEq(checkTrashDrawerWidth, trashDrawer.width, "Trash Drawer does not fit in WIDTH")
+checkTrashDrawerDepth = lhsPanel.depth - cabinetToeKick.depth - outerPanel.thickness
+assertGreaterThanOrEq(checkTrashDrawerDepth, trashDrawer.depth, "Trash Drawer does not fit in DEPTH")
+
 // TODO: remove extra slack???
-_slack = 2.5 + 3
+verticalSlot = 2.5 + 3
 refCabinet = {
-  width: refrigerator.width + 2 + _slack
+  innerWidth: refrigerator.width + 1.5 + verticalSlot,
+  outerWidth: refrigerator.width + 2 + verticalSlot + outerPanel.thickness + innerPanel.thickness
 }
+checkRefSpaceWidth = refCabinet.innerWidth - verticalSlot - trim.width
+assertGreaterThanOrEq(checkRefSpaceWidth, refrigerator.width, "Refrigerator does not fit in WIDTH")
+
+
+/* ************************
+     Utility functions
+************************* */
+
 
 // function that draws a simple box (i.e. sheet of plywood)
 fn extrudedBox = (where, dim) => {
@@ -95,6 +127,11 @@ fn extrudedBox = (where, dim) => {
 }
 }
 
+/* ************************
+        Draw Objects
+************************* */
+
+
 // FIT: scribe to back wall?
 // FIT: notch out corners for closet posts
 counterTop = extrudedBox({
@@ -102,7 +139,7 @@ counterTop = extrudedBox({
   origin: [-3.5, 0 - (7 / 16)]
 }, {
   length: lhsPanel.depth + 7 / 16,
-  width: 50 + 2 * 3.5,
+  width: trashCabinet.outerWidth + refCabinet.outerWidth + (2*3.5),
   height: counter.thickness
 })
 
@@ -111,29 +148,76 @@ facetrim = {
     plane: offsetPlane('XZ', 0 - cabinetToeKick.depth),
     origin: [
       outerPanel.thickness,
-      lhsPanel.height - trim.profile
+      lhsPanel.height - trim.width
     ]
   }, {
-    length: trim.profile,
-    width: trashCabinet.width + refCabinet.width,
+    length: trim.width,
+    width: trashCabinet.innerWidth + (2 * innerPanel.thickness) + refCabinet.innerWidth,
     height: trim.thickness
   }),
-  vertical: extrudedBox({
+  vertical1: extrudedBox({
     plane: offsetPlane('XZ', 0 - cabinetToeKick.depth),
-    origin: [trashCabinet.width, trim.height]
+    origin: [
+      outerPanel.thickness + trashCabinet.innerWidth,
+      cabinetToeKick.height
+    ]
   }, {
-    length: lhsPanel.height - trim.height - trim.profile,
-    width: trim.profile,
+    length: lhsPanel.height - cabinetToeKick.height - trim.width,
+    width: trim.width,
+    height: trim.thickness
+  }),
+  vertical2: extrudedBox({
+  plane: offsetPlane('XZ', 0 - cabinetToeKick.depth),
+  origin: [
+    trashCabinet.outerWidth + innerPanel.thickness + verticalSlot,
+    cabinetToeKick.height
+  ]
+  }, {
+    length: lhsPanel.height - cabinetToeKick.height - trim.width,
+    width: trim.width,
     height: trim.thickness
   }),
   toe: extrudedBox({
     plane: offsetPlane('XZ', 0 - cabinetToeKick.depth),
     origin: [outerPanel.thickness, 0]
   }, {
-    length: trim.height,
-    width: trashCabinet.width + refCabinet.width,
+    length: cabinetToeKick.height,
+    width: trashCabinet.innerWidth + (2 * innerPanel.thickness) + refCabinet.innerWidth,
     height: trim.thickness
-  })
+  }),
+  leftTopDrawerFront: extrudedBox({
+    plane: offsetPlane('XZ', 0 - cabinetToeKick.depth),
+    origin: [
+      outerPanel.thickness + 1/8,
+      upperShelfHeight
+    ]
+  }, {
+    length: drawer.height - 1/8,
+    width: trashCabinet.innerWidth - 1/4,
+    height: trim.thickness
+  }),
+  leftMiddleDrawerFront: extrudedBox({
+    plane: offsetPlane('XZ', 0 - cabinetToeKick.depth),
+    origin: [
+      outerPanel.thickness + 1/8,
+      middleShelfHeight
+    ]
+  }, {
+    length: drawer.height - 1/8,
+    width: trashCabinet.innerWidth - 1/4,
+    height: trim.thickness
+  }),
+  leftBottomDrawerFront: extrudedBox({
+    plane: offsetPlane('XZ', 0 - cabinetToeKick.depth),
+    origin: [
+      outerPanel.thickness + 1/8,
+      cabinetToeKick.height + 1/8
+    ]
+  }, {
+    length: lowerShelfInnerHeight - 1/8,
+    width: trashCabinet.innerWidth - 1/4,
+    height: trim.thickness
+  }),
 }
 
 fn cabinet = () => {
@@ -147,35 +231,35 @@ fn cabinet = () => {
   })
 
   rhsPanel = extrudedBox({
-    plane: offsetPlane('YZ', trashCabinet.width),
+    plane: offsetPlane('YZ', trashCabinet.innerWidth + outerPanel.thickness),
     origin: [cabinetToeKick.depth, 0]
   }, {
     length: lhsPanelHeight,
     width: lhsPanelDepth - cabinetToeKick.depth,
-    height: outerPanel.thickness
+    height: innerPanel.thickness
   })
 
   backPanel = extrudedBox({
     plane: offsetPlane('XZ', 0 - lhsPanelDepth),
     origin: [
       outerPanel.thickness,
-      trim.height - outerPanel.thickness
+      cabinetToeKick.height - outerPanel.thickness
     ]
   }, {
-    length: lhsPanelHeight - trim.height + outerPanel.thickness,
-    width: trashCabinet.width - outerPanel.thickness,
+    length: lhsPanelHeight - cabinetToeKick.height + outerPanel.thickness,
+    width: trashCabinet.innerWidth,
     height: outerPanel.thickness
   })
 
   bottomPanel = extrudedBox({
-    plane: offsetPlane('XY', trim.height - outerPanel.thickness),
+    plane: offsetPlane('XY', cabinetToeKick.height - outerPanel.thickness),
     origin: [
       outerPanel.thickness,
       cabinetToeKick.depth
     ]
   }, {
     length: lhsPanelDepth - cabinetToeKick.depth - outerPanel.thickness,
-    width: trashCabinet.width - outerPanel.thickness,
+    width: trashCabinet.innerWidth,
     height: outerPanel.thickness
   })
 
@@ -187,7 +271,7 @@ fn cabinet = () => {
     ]
   }, {
     length: topBrace.depth,
-    width: trashCabinet.width - outerPanel.thickness,
+    width: trashCabinet.innerWidth,
     height: outerPanel.thickness
   })
 
@@ -195,11 +279,11 @@ fn cabinet = () => {
     plane: offsetPlane('XY', lhsPanelHeight - outerPanel.thickness),
     origin: [
       outerPanel.thickness,
-      lhsPanelDepth - topBrace.depth
+      lhsPanelDepth - outerPanel.thickness - topBrace.depth
     ]
   }, {
     length: topBrace.depth,
-    width: trashCabinet.width - outerPanel.thickness,
+    width: trashCabinet.innerWidth,
     height: outerPanel.thickness
   })
 
@@ -209,20 +293,32 @@ fn cabinet = () => {
   backPanel: backPanel,
   bottomPanel: bottomPanel,
   frontBrace: frontBrace,
-  rearBrace: rearBrace
+  rearBrace: rearBrace,
+  outerWidth: outerPanel.thickness + trashCabinet.innerWidth + innerPanel.thickness
 }
 }
 
 cabinetWithShelf = {
-  shelf: extrudedBox({
-    plane: offsetPlane("XY", lowerShelfHeight + trim.height + innerPanel.thickness),
+  upperDrawer: extrudedBox({
+    plane: offsetPlane("XY", upperShelfHeight),
     origin: [
       outerPanel.thickness,
       cabinetToeKick.depth
     ]
   }, {
     length: lhsPanel.depth - cabinetToeKick.depth - outerPanel.thickness,
-    width: trashCabinet.width - outerPanel.thickness,
+    width: trashCabinet.innerWidth,
+    height: innerPanel.thickness
+  }),
+  lowerDrawer: extrudedBox({
+    plane: offsetPlane("XY", middleShelfHeight),
+    origin: [
+      outerPanel.thickness,
+      cabinetToeKick.depth
+    ]
+  }, {
+    length: lhsPanel.depth - cabinetToeKick.depth - outerPanel.thickness,
+    width: trashCabinet.innerWidth,
     height: innerPanel.thickness
   }),
   cabinet: cabinet()
@@ -230,15 +326,23 @@ cabinetWithShelf = {
 
 rightCabinet = {
   leftPanel: extrudedBox({
-    plane: offsetPlane('YZ', trashCabinet.width + outerPanel.thickness),
+    plane: offsetPlane('YZ', trashCabinet.outerWidth),
     origin: [cabinetToeKick.depth, 0]
   }, {
     length: lhsPanel.height,
     width: lhsPanel.depth - cabinetToeKick.depth,
-    height: outerPanel.thickness
+    height: innerPanel.thickness
+  }),
+  middlePanel: extrudedBox({
+    plane: offsetPlane('YZ', trashCabinet.outerWidth + innerPanel.thickness + verticalSlot),
+    origin: [cabinetToeKick.depth, cabinetToeKick.height - refrigerator.doorSwingClearance]
+  }, {
+    length: lhsPanel.height - cabinetToeKick.height - outerPanel.thickness + refrigerator.doorSwingClearance,
+    width: lhsPanel.depth - cabinetToeKick.depth - outerPanel.thickness,
+    height: innerPanel.thickness
   }),
   rightPanel: extrudedBox({
-    plane: offsetPlane("YZ", trashCabinet.width + outerPanel.thickness + refCabinet.width),
+    plane: offsetPlane("YZ", trashCabinet.outerWidth + innerPanel.thickness + refCabinet.innerWidth),
     origin: [0, 0]
   }, {
     length: lhsPanel.height,
@@ -248,45 +352,45 @@ rightCabinet = {
   backPanel: extrudedBox({
     plane: offsetPlane('XZ', 0 - lhsPanel.depth),
     origin: [
-      2 * outerPanel.thickness + trashCabinet.width,
-      trim.height - outerPanel.thickness
+      trashCabinet.outerWidth + innerPanel.thickness,
+      cabinetToeKick.height - refrigerator.doorSwingClearance - outerPanel.thickness
     ]
   }, {
-    length: lhsPanel.height - trim.height + outerPanel.thickness,
-    width: refCabinet.width - outerPanel.thickness,
+    length: lhsPanel.height - cabinetToeKick.height + outerPanel.thickness + refrigerator.doorSwingClearance,
+    width: refCabinet.innerWidth,
     height: outerPanel.thickness
   }),
   bottomPanel: extrudedBox({
-    plane: offsetPlane('XY', trim.height - outerPanel.thickness - refrigerator.doorSwingClearance),
+    plane: offsetPlane('XY', cabinetToeKick.height - outerPanel.thickness - refrigerator.doorSwingClearance),
     origin: [
-      2 * outerPanel.thickness + trashCabinet.width,
+      trashCabinet.outerWidth + innerPanel.thickness,
       cabinetToeKick.depth
     ]
   }, {
     length: lhsPanel.depth - cabinetToeKick.depth - outerPanel.thickness,
-    width: refCabinet.width - outerPanel.thickness,
+    width: refCabinet.innerWidth,
     height: outerPanel.thickness
   }),
   frontBrace: extrudedBox({
     plane: offsetPlane('XY', lhsPanel.height - outerPanel.thickness),
     origin: [
-      2 * outerPanel.thickness + trashCabinet.width,
+      trashCabinet.outerWidth + innerPanel.thickness,
       cabinetToeKick.depth
     ]
   }, {
     length: topBrace.depth,
-    width: refCabinet.width - outerPanel.thickness,
+    width: refCabinet.innerWidth,
     height: outerPanel.thickness
   }),
   rearBrace: extrudedBox({
     plane: offsetPlane('XY', lhsPanel.height - outerPanel.thickness),
     origin: [
-      2 * outerPanel.thickness + trashCabinet.width,
-      lhsPanel.depth - topBrace.depth
+      trashCabinet.outerWidth + innerPanel.thickness,
+      lhsPanel.depth - outerPanel.thickness - topBrace.depth
     ]
   }, {
     length: topBrace.depth,
-    width: refCabinet.width - outerPanel.thickness,
+    width: refCabinet.innerWidth,
     height: outerPanel.thickness
   })
 }
