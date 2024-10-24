@@ -2,351 +2,291 @@
 // features:
 // * fit within closet bay
 // * LHS
-//   * drawer for cutlery
-//   * shelf for microwave
+// * drawer for cutlery
+// * shelf for side-by-side trash/recycling
 // * RHS
-//   * bay for mini-fridge
+// * bay for mini-fridge
 // * butcher-block counter-top
 // * 1/2" partial face trim
 // * recessed for toe-kick
 
+
 // lang-ref: https://zoo.dev/docs/kcl
-const microwaveHeight = 12
-const microwaveWidth = 20.25
-const microwaveDepth = 16.5
 
-const refrigeratorHeight = 33
-const refrigeratorWidth = 19
-const refrigeratorDepth = 20.5
 
-const counterThickness = 2.5
+// Rev-A-Shelf Double 30-Quart Pullout Under Cabinet Trash Can with Soft Open & Close Slide System, Metallic Silver, Maple Wood Bottom 4WCBM-2430DM-2
+// https://www.amazon.com/gp/product/B0019CPKRG/ref=sw_img_1?smid=A1DXN92KCKEQV4&psc=1
+trashDrawer = {
+  height: 19.25,
+  width: 20.25,
+  depth: 21.75
+}
 
-const outerPanelThickness = 0.75
-const innerPanelThickness = 0.5
-const faceTrimThickness = 0.5
+refrigerator = { height: 33, width: 19, depth: 20.5 }
 
-const trimHeight = 3.5
-const trimProfile = 2 * outerPanelThickness
+counter = { thickness: 1 }
 
-const lhsPanelDepth = 21
-const lhsPanelHeight = refrigeratorHeight + 2 + trimHeight + trimProfile
+outerPanel = { thickness: 0.75 }
+innerPanel = { thickness: 0.5 }
 
-const cabinetToeKickDepth = 4
+trim = {
+  height: 2.5,
+  // toekick height
+  profile: 2 * outerPanel.thickness,
+  thickness: 0.5
+}
 
-const topBraceDepth = 4
-const drawerHeight = 8
+// FIXME: want >3"
+cabinetToeKick = { depth: 2.75 }
 
-const upperShelfHeight = microwaveHeight + 2
-const lowerShelfHeight = lhsPanelHeight - trimHeight - drawerHeight - upperShelfHeight
+topBrace = {
+  depth: 4,
+  thickness: outerPanel.thickness
+}
+drawer = { height: 8 }
 
-const cabinetWidth = microwaveWidth + 2 * 2.5
+// FIXME: want top of counter to be 34-36"!!!
+// many of the cabinet dimensions are keyed off of this
+lhsPanel = {
+  // measured from back wall to flush with closet face
+  depth: 25.25,
+  height: refrigerator.height + 0.5 + trim.height + topBrace.thickness,
+  // trim.profile
+}
+counterTopHeight = lhsPanel.height + counter.thickness
+// assertLessThanOrEq(counterHeight, 36, "top of counter is TOO tall!")
 
-const refCabinetWidth = refrigeratorWidth + 2 * 2.5
-const refLowerShelfHeight = refrigeratorHeight + 2
 
-const lhsPanel = startSketchOn('YZ')
-  |> startProfileAt([0, 0], %)
-  |> angledLine([0, lhsPanelDepth], %, $rectangleSegmentA001)
-  |> angledLine([
-       segAng(rectangleSegmentA001) + 90,
-       lhsPanelHeight
-     ], %, $rectangleSegmentB001)
-  |> angledLine([
-       segAng(rectangleSegmentA001),
-       -segLen(rectangleSegmentA001)
-     ], %, $rectangleSegmentC001)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-  |> extrude(outerPanelThickness, %)
-const rhsPanel = startSketchOn(offsetPlane("YZ", cabinetWidth))
-  |> startProfileAt([cabinetToeKickDepth, 0], %)
-  |> angledLine([0, lhsPanelDepth - cabinetToeKickDepth], %, $rectangleSegmentA002)
-  |> angledLine([
-       segAng(rectangleSegmentA002) + 90,
-       lhsPanelHeight
-     ], %, $rectangleSegmentB002)
-  |> angledLine([
-       segAng(rectangleSegmentA002),
-       -segLen(rectangleSegmentA002)
-     ], %, $rectangleSegmentC002)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-  |> extrude(outerPanelThickness, %)
-const bottomPanel = startSketchOn(offsetPlane("XY", trimHeight - outerPanelThickness))
-  |> startProfileAt([
-       outerPanelThickness,
-       cabinetToeKickDepth
-     ], %)
-  |> angledLine([0, cabinetWidth - outerPanelThickness], %, $rectangleSegmentA003)
-  |> angledLine([
-       segAng(rectangleSegmentA003) + 90,
-       lhsPanelDepth - cabinetToeKickDepth - outerPanelThickness
-     ], %, $rectangleSegmentB003)
-  |> angledLine([
-       segAng(rectangleSegmentA003),
-       -segLen(rectangleSegmentA003)
-     ], %, $rectangleSegmentC003)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-  |> extrude(outerPanelThickness, %)
-const mwLowerShelf = startSketchOn(offsetPlane("XY", lowerShelfHeight + trimHeight))
-  |> startProfileAt([
-       outerPanelThickness,
-       cabinetToeKickDepth
-     ], %)
-  |> angledLine([0, cabinetWidth - outerPanelThickness], %, $rectangleSegmentA004)
-  |> angledLine([
-       segAng(rectangleSegmentA004) + 90,
-       lhsPanelDepth - cabinetToeKickDepth - outerPanelThickness
-     ], %, $rectangleSegmentB004)
-  |> angledLine([
-       segAng(rectangleSegmentA004),
-       -segLen(rectangleSegmentA004)
-     ], %, $rectangleSegmentC004)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-  |> extrude(innerPanelThickness, %)
-const mwUpperShelf = startSketchOn(offsetPlane("XY", upperShelfHeight + lowerShelfHeight + trimHeight + innerPanelThickness))
-  |> startProfileAt([
-       outerPanelThickness,
-       cabinetToeKickDepth
-     ], %)
-  |> angledLine([0, cabinetWidth - outerPanelThickness], %, $rectangleSegmentA005)
-  |> angledLine([
-       segAng(rectangleSegmentA005) + 90,
-       lhsPanelDepth - cabinetToeKickDepth - outerPanelThickness
-     ], %, $rectangleSegmentB005)
-  |> angledLine([
-       segAng(rectangleSegmentA005),
-       -segLen(rectangleSegmentA005)
-     ], %, $rectangleSegmentC005)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-  |> extrude(innerPanelThickness, %)
-const topFront = startSketchOn(offsetPlane("XY", lhsPanelHeight - outerPanelThickness))
-  |> startProfileAt([
-       outerPanelThickness,
-       cabinetToeKickDepth
-     ], %)
-  |> angledLine([0, cabinetWidth - outerPanelThickness], %, $rectangleSegmentA007)
-  |> angledLine([
-       segAng(rectangleSegmentA005) + 90,
-       topBraceDepth
-     ], %, $rectangleSegmentB007)
-  |> angledLine([
-       segAng(rectangleSegmentA007),
-       -segLen(rectangleSegmentA007)
-     ], %, $rectangleSegmentC007)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-  |> extrude(outerPanelThickness, %)
-const topBack = startSketchOn(offsetPlane("XY", lhsPanelHeight - outerPanelThickness))
-  |> startProfileAt([
-       outerPanelThickness,
-       lhsPanelDepth - topBraceDepth
-     ], %)
-  |> angledLine([0, cabinetWidth - outerPanelThickness], %, $rectangleSegmentA008)
-  |> angledLine([
-       segAng(rectangleSegmentA008) + 90,
-       topBraceDepth
-     ], %, $rectangleSegmentB008)
-  |> angledLine([
-       segAng(rectangleSegmentA008),
-       -segLen(rectangleSegmentA008)
-     ], %, $rectangleSegmentC008)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-  |> extrude(outerPanelThickness, %)
-const backPanel = startSketchOn(offsetPlane("XZ", 0 - lhsPanelDepth))
-  |> startProfileAt([
-       outerPanelThickness,
-       trimHeight - outerPanelThickness
-     ], %)
-  |> angledLine([0, cabinetWidth - outerPanelThickness], %, $rectangleSegmentA006)
-  |> angledLine([
-       segAng(rectangleSegmentA006) + 90,
-       lhsPanelHeight - trimHeight + outerPanelThickness
-     ], %, $rectangleSegmentB006)
-  |> angledLine([
-       segAng(rectangleSegmentA006),
-       -segLen(rectangleSegmentA006)
-     ], %, $rectangleSegmentC006)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-  |> extrude(outerPanelThickness, %)
+lowerShelfHeight = lhsPanel.height - trim.height - drawer.height
+assertGreaterThanOrEq(lowerShelfHeight, trashDrawer.height, "Lower shelf does not fit Trash Drawer")
+assertGreaterThanOrEq(lhsPanel.depth - cabinetToeKick.depth - outerPanel.thickness, trashDrawer.depth, "Cabinet depth does not fit Trash Drawer")
 
-const counterTop = startSketchOn(offsetPlane("XY", lhsPanelHeight))
-  |> startProfileAt([-3.5, 0], %)
-  |> angledLine([0, 50 + 2 * 3.5], %, $rectangleSegmentA010)
-  |> angledLine([
-       segAng(rectangleSegmentA010) + 90,
-       lhsPanelDepth
-     ], %, $rectangleSegmentB010)
-  |> angledLine([
-       segAng(rectangleSegmentA010),
-       -segLen(rectangleSegmentA010)
-     ], %, $rectangleSegmentC010)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-  |> extrude(counterThickness, %)
+trashCabinet = { width: trashDrawer.width + 2 }
+// TODO: remove extra slack???
+_slack = 2.5 + 3
+refCabinet = {
+  width: refrigerator.width + 2 + _slack
+}
 
-const upperFaceTrim = startSketchOn(offsetPlane("XZ", 0 - cabinetToeKickDepth))
-  |> startProfileAt([
-       outerPanelThickness,
-       lhsPanelHeight - trimProfile
-     ], %)
-  |> angledLine([0, cabinetWidth + refCabinetWidth], %, $rectangleSegmentA031)
-  |> angledLine([
-       segAng(rectangleSegmentA031) + 90,
-       trimProfile
-     ], %, $rectangleSegmentB031)
-  |> angledLine([
-       segAng(rectangleSegmentA031),
-       -segLen(rectangleSegmentA031)
-     ], %, $rectangleSegmentC031)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-  |> extrude(faceTrimThickness, %)
+// function that draws a simple box (i.e. sheet of plywood)
+fn extrudedBox = (where, dim) => {
+  length = dim.length
+  width = dim.width
+  thickness = dim.height
+  b = startSketchOn(where.plane)
+    |> startProfileAt(where.origin, %)
+    |> angledLine([0, width], %, $rectangleSegmentA001)
+    |> angledLine([
+         segAng(rectangleSegmentA001) + 90,
+         length
+       ], %, $rectangleSegmentB001)
+    |> angledLine([
+         segAng(rectangleSegmentA001),
+         -segLen(rectangleSegmentA001)
+       ], %, $rectangleSegmentC001)
+    |> lineTo([profileStartX(%), profileStartY(%)], %)
+    |> close(%)
+    |> extrude(thickness, %)
+  return {
+  length: length,
+  width: width,
+  thickness: thickness,
+  extrudedBox: b
+}
+}
 
-const middleFaceTrim = startSketchOn(offsetPlane("XZ", 0 - cabinetToeKickDepth))
-  |> startProfileAt([cabinetWidth, trimHeight], %)
-  |> angledLine([0, trimProfile], %, $rectangleSegmentA032)
-  |> angledLine([
-       segAng(rectangleSegmentA032) + 90,
-       lhsPanelHeight - trimHeight - trimProfile
-     ], %, $rectangleSegmentB032)
-  |> angledLine([
-       segAng(rectangleSegmentA032),
-       -segLen(rectangleSegmentA032)
-     ], %, $rectangleSegmentC032)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-  |> extrude(faceTrimThickness, %)
+// FIT: scribe to back wall?
+// FIT: notch out corners for closet posts
+counterTop = extrudedBox({
+  plane: offsetPlane('XY', lhsPanel.height),
+  origin: [-3.5, 0 - (7 / 16)]
+}, {
+  length: lhsPanel.depth + 7 / 16,
+  width: 50 + 2 * 3.5,
+  height: counter.thickness
+})
 
-const toeFaceTrim = startSketchOn(offsetPlane("XZ", 0 - cabinetToeKickDepth))
-  |> startProfileAt([outerPanelThickness, 0], %)
-  |> angledLine([0, cabinetWidth + refCabinetWidth], %, $rectangleSegmentA033)
-  |> angledLine([
-       segAng(rectangleSegmentA033) + 90,
-       trimHeight
-     ], %, $rectangleSegmentB033)
-  |> angledLine([
-       segAng(rectangleSegmentA033),
-       -segLen(rectangleSegmentA033)
-     ], %, $rectangleSegmentC033)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-  |> extrude(faceTrimThickness, %)
+facetrim = {
+  upper: extrudedBox({
+    plane: offsetPlane('XZ', 0 - cabinetToeKick.depth),
+    origin: [
+      outerPanel.thickness,
+      lhsPanel.height - trim.profile
+    ]
+  }, {
+    length: trim.profile,
+    width: trashCabinet.width + refCabinet.width,
+    height: trim.thickness
+  }),
+  vertical: extrudedBox({
+    plane: offsetPlane('XZ', 0 - cabinetToeKick.depth),
+    origin: [trashCabinet.width, trim.height]
+  }, {
+    length: lhsPanel.height - trim.height - trim.profile,
+    width: trim.profile,
+    height: trim.thickness
+  }),
+  toe: extrudedBox({
+    plane: offsetPlane('XZ', 0 - cabinetToeKick.depth),
+    origin: [outerPanel.thickness, 0]
+  }, {
+    length: trim.height,
+    width: trashCabinet.width + refCabinet.width,
+    height: trim.thickness
+  })
+}
 
-const refLhsPanel = startSketchOn(offsetPlane("YZ", cabinetWidth + outerPanelThickness))
-  |> startProfileAt([cabinetToeKickDepth, 0], %)
-  |> angledLine([0, lhsPanelDepth - cabinetToeKickDepth], %, $rectangleSegmentA021)
-  |> angledLine([
-       segAng(rectangleSegmentA021) + 90,
-       lhsPanelHeight
-     ], %, $rectangleSegmentB021)
-  |> angledLine([
-       segAng(rectangleSegmentA021),
-       -segLen(rectangleSegmentA021)
-     ], %, $rectangleSegmentC021)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-  |> extrude(outerPanelThickness, %)
+fn cabinet = () => {
+  lhsPanelHeight = lhsPanel.height
+  lhsPanelDepth = lhsPanel.depth
 
-const refRhsRefPanel = startSketchOn(offsetPlane("YZ", cabinetWidth + outerPanelThickness + refCabinetWidth))
-  |> startProfileAt([0, 0], %)
-  |> angledLine([0, lhsPanelDepth], %, $rectangleSegmentA022)
-  |> angledLine([
-       segAng(rectangleSegmentA022) + 90,
-       lhsPanelHeight
-     ], %, $rectangleSegmentB022)
-  |> angledLine([
-       segAng(rectangleSegmentA022),
-       -segLen(rectangleSegmentA022)
-     ], %, $rectangleSegmentC022)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-  |> extrude(outerPanelThickness, %)
+  lhsPanel = extrudedBox({ plane: 'YZ', origin: [0, 0] }, {
+    length: lhsPanel.height,
+    width: lhsPanel.depth,
+    height: outerPanel.thickness
+  })
 
-const refbottomPanel = startSketchOn(offsetPlane("XY", trimHeight - outerPanelThickness))
-  |> startProfileAt([
-       2 * outerPanelThickness + cabinetWidth,
-       cabinetToeKickDepth
-     ], %)
-  |> angledLine([
-       0,
-       refCabinetWidth - outerPanelThickness
-     ], %, $rectangleSegmentA023)
-  |> angledLine([
-       segAng(rectangleSegmentA023) + 90,
-       lhsPanelDepth - cabinetToeKickDepth - outerPanelThickness
-     ], %, $rectangleSegmentB023)
-  |> angledLine([
-       segAng(rectangleSegmentA023),
-       -segLen(rectangleSegmentA023)
-     ], %, $rectangleSegmentC023)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-  |> extrude(outerPanelThickness, %)
+  rhsPanel = extrudedBox({
+    plane: offsetPlane('YZ', trashCabinet.width),
+    origin: [cabinetToeKick.depth, 0]
+  }, {
+    length: lhsPanelHeight,
+    width: lhsPanelDepth - cabinetToeKick.depth,
+    height: outerPanel.thickness
+  })
 
-const reftopFront = startSketchOn(offsetPlane("XY", lhsPanelHeight - outerPanelThickness))
-  |> startProfileAt([
-       2 * outerPanelThickness + cabinetWidth,
-       cabinetToeKickDepth
-     ], %)
-  |> angledLine([
-       0,
-       refCabinetWidth - outerPanelThickness
-     ], %, $rectangleSegmentA024)
-  |> angledLine([
-       segAng(rectangleSegmentA024) + 90,
-       topBraceDepth
-     ], %, $rectangleSegmentB024)
-  |> angledLine([
-       segAng(rectangleSegmentA024),
-       -segLen(rectangleSegmentA024)
-     ], %, $rectangleSegmentC024)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-  |> extrude(outerPanelThickness, %)
-const reftopBack = startSketchOn(offsetPlane("XY", lhsPanelHeight - outerPanelThickness))
-  |> startProfileAt([
-       2 * outerPanelThickness + cabinetWidth,
-       lhsPanelDepth - topBraceDepth
-     ], %)
-  |> angledLine([
-       0,
-       refCabinetWidth - outerPanelThickness
-     ], %, $rectangleSegmentA025)
-  |> angledLine([
-       segAng(rectangleSegmentA025) + 90,
-       topBraceDepth
-     ], %, $rectangleSegmentB025)
-  |> angledLine([
-       segAng(rectangleSegmentA025),
-       -segLen(rectangleSegmentA025)
-     ], %, $rectangleSegmentC025)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-  |> extrude(outerPanelThickness, %)
+  backPanel = extrudedBox({
+    plane: offsetPlane('XZ', 0 - lhsPanelDepth),
+    origin: [
+      outerPanel.thickness,
+      trim.height - outerPanel.thickness
+    ]
+  }, {
+    length: lhsPanelHeight - trim.height + outerPanel.thickness,
+    width: trashCabinet.width - outerPanel.thickness,
+    height: outerPanel.thickness
+  })
 
-const refbackPanel = startSketchOn(offsetPlane("XZ", 0 - lhsPanelDepth))
-  |> startProfileAt([
-       2 * outerPanelThickness + cabinetWidth,
-       trimHeight - outerPanelThickness
-     ], %)
-  |> angledLine([
-       0,
-       refCabinetWidth - outerPanelThickness
-     ], %, $rectangleSegmentA026)
-  |> angledLine([
-       segAng(rectangleSegmentA026) + 90,
-       lhsPanelHeight - trimHeight + outerPanelThickness
-     ], %, $rectangleSegmentB026)
-  |> angledLine([
-       segAng(rectangleSegmentA026),
-       -segLen(rectangleSegmentA026)
-     ], %, $rectangleSegmentC026)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-  |> extrude(outerPanelThickness, %)
+  bottomPanel = extrudedBox({
+    plane: offsetPlane('XY', trim.height - outerPanel.thickness),
+    origin: [
+      outerPanel.thickness,
+      cabinetToeKick.depth
+    ]
+  }, {
+    length: lhsPanelDepth - cabinetToeKick.depth - outerPanel.thickness,
+    width: trashCabinet.width - outerPanel.thickness,
+    height: outerPanel.thickness
+  })
+
+  frontBrace = extrudedBox({
+    plane: offsetPlane('XY', lhsPanelHeight - outerPanel.thickness),
+    origin: [
+      outerPanel.thickness,
+      cabinetToeKick.depth
+    ]
+  }, {
+    length: topBrace.depth,
+    width: trashCabinet.width - outerPanel.thickness,
+    height: outerPanel.thickness
+  })
+
+  rearBrace = extrudedBox({
+    plane: offsetPlane('XY', lhsPanelHeight - outerPanel.thickness),
+    origin: [
+      outerPanel.thickness,
+      lhsPanelDepth - topBrace.depth
+    ]
+  }, {
+    length: topBrace.depth,
+    width: trashCabinet.width - outerPanel.thickness,
+    height: outerPanel.thickness
+  })
+
+  return {
+  leftPanel: lhsPanel,
+  rightPanel: rhsPanel,
+  backPanel: backPanel,
+  bottomPanel: bottomPanel,
+  frontBrace: frontBrace,
+  rearBrace: rearBrace
+}
+}
+
+cabinetWithShelf = {
+  shelf: extrudedBox({
+    plane: offsetPlane("XY", lowerShelfHeight + trim.height + innerPanel.thickness),
+    origin: [
+      outerPanel.thickness,
+      cabinetToeKick.depth
+    ]
+  }, {
+    length: lhsPanel.depth - cabinetToeKick.depth - outerPanel.thickness,
+    width: trashCabinet.width - outerPanel.thickness,
+    height: innerPanel.thickness
+  }),
+  cabinet: cabinet()
+}
+
+rightCabinet = {
+  leftPanel: extrudedBox({
+    plane: offsetPlane('YZ', trashCabinet.width + outerPanel.thickness),
+    origin: [cabinetToeKick.depth, 0]
+  }, {
+    length: lhsPanel.height,
+    width: lhsPanel.depth - cabinetToeKick.depth,
+    height: outerPanel.thickness
+  }),
+  rightPanel: extrudedBox({
+    plane: offsetPlane("YZ", trashCabinet.width + outerPanel.thickness + refCabinet.width),
+    origin: [0, 0]
+  }, {
+    length: lhsPanel.height,
+    width: lhsPanel.depth,
+    height: outerPanel.thickness
+  }),
+  backPanel: extrudedBox({
+    plane: offsetPlane('XZ', 0 - lhsPanel.depth),
+    origin: [
+      2 * outerPanel.thickness + trashCabinet.width,
+      trim.height - outerPanel.thickness
+    ]
+  }, {
+    length: lhsPanel.height - trim.height + outerPanel.thickness,
+    width: refCabinet.width - outerPanel.thickness,
+    height: outerPanel.thickness
+  }),
+  bottomPanel: extrudedBox({
+    plane: offsetPlane('XY', trim.height - outerPanel.thickness),
+    origin: [
+      2 * outerPanel.thickness + trashCabinet.width,
+      cabinetToeKick.depth
+    ]
+  }, {
+    length: lhsPanel.depth - cabinetToeKick.depth - outerPanel.thickness,
+    width: refCabinet.width - outerPanel.thickness,
+    height: outerPanel.thickness
+  }),
+  frontBrace: extrudedBox({
+    plane: offsetPlane('XY', lhsPanel.height - outerPanel.thickness),
+    origin: [
+      2 * outerPanel.thickness + trashCabinet.width,
+      cabinetToeKick.depth
+    ]
+  }, {
+    length: topBrace.depth,
+    width: refCabinet.width - outerPanel.thickness,
+    height: outerPanel.thickness
+  }),
+  rearBrace: extrudedBox({
+    plane: offsetPlane('XY', lhsPanel.height - outerPanel.thickness),
+    origin: [
+      2 * outerPanel.thickness + trashCabinet.width,
+      lhsPanel.depth - topBrace.depth
+    ]
+  }, {
+    length: topBrace.depth,
+    width: refCabinet.width - outerPanel.thickness,
+    height: outerPanel.thickness
+  })
+}
