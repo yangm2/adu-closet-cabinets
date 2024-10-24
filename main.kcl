@@ -22,7 +22,7 @@ trashDrawer = {
   depth: 21.75
 }
 
-refrigerator = { height: 33, width: 19, depth: 20.5 }
+refrigerator = { height: 33, width: 19, depth: 20.5 , doorSwingClearance: 0.75}
 
 counter = { thickness: 1 }
 
@@ -50,7 +50,7 @@ drawer = { height: 8 }
 lhsPanel = {
   // measured from back wall to flush with closet face
   depth: 25.25,
-  height: refrigerator.height + 0.5 + trim.height + topBrace.thickness,
+  height: refrigerator.height + 0.5 + trim.height + topBrace.thickness - refrigerator.doorSwingClearance,
   // trim.profile
 }
 counterTopHeight = lhsPanel.height + counter.thickness
@@ -257,7 +257,7 @@ rightCabinet = {
     height: outerPanel.thickness
   }),
   bottomPanel: extrudedBox({
-    plane: offsetPlane('XY', trim.height - outerPanel.thickness),
+    plane: offsetPlane('XY', trim.height - outerPanel.thickness - refrigerator.doorSwingClearance),
     origin: [
       2 * outerPanel.thickness + trashCabinet.width,
       cabinetToeKick.depth
